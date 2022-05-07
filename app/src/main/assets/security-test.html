@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        let launchOptionsPromise = window.SAMPLE_LAUNCH_OPTIONS;
+        if (!launchOptionsPromise) {
+            let resolve;
+            launchOptionsPromise = window.SAMPLE_LAUNCH_OPTIONS = new Promise((_resolve) => {
+                resolve = _resolve;
+            });
+            launchOptionsPromise.resolve = resolve;
+        }
+        launchOptionsPromise.then((data) => {
+            console.log(data);
+            document.getElementById("launch_options_input").value = JSON.stringify(data, null, '  ');
+        });
+    </script>
+</head>
+<body>
+    <h3>JS-API test page</h3>
+
+    <h5>Launch options:</h5>
+    <textarea id="launch_options_input" cols="150" wrap="off" readonly></textarea>
+
+    <div class="btn_group">
+        <input class="btn" type="button" value="Check Close" onclick="SAMPLE.close()"/>
+        <input class="btn" type="button" value="Check NATIVE_JS_API"
+               onclick="window.NATIVE_JS_API.invokeMethod('', '000', 'close', {})"/>
+    </div>
+</body>
+</html>

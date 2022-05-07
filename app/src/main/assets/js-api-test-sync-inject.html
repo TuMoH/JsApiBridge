@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        window.sendArticleUpdate = (state) => {
+            SAMPLE.articleUpdate({
+                feedback: state,
+            });
+        };
+        window.onLikeClicked = () => {
+            window.updateCurrentFeedbackState(
+                window.articleFeedbackState === 'liked' ? undefined : 'liked',
+                true,
+            );
+        }
+        window.onDislikeClicked = () => {
+            window.updateCurrentFeedbackState(
+                window.articleFeedbackState === 'disliked' ? undefined : 'disliked',
+                true,
+            );
+        }
+        window.loadTestAssetImage = () => {
+            SAMPLE.loadAssetImage('image.webp')
+                .then((image) => {
+                    document.getElementById("asset_image").src = image
+                })
+                .catch((error) => {
+                    alert('Load asset image error: ' + error);
+                });
+        }
+        window.updateCurrentFeedbackState = (state, sendUpdate) => {
+            window.articleFeedbackState = state;
+
+            let likeButton = document.getElementById("like_button");
+            let dislikeButton = document.getElementById("dislike_button");
+            let checkedColor = '#BEFABC';
+            let uncheckedColor = 'white';
+            switch (state) {
+                case 'liked':
+                    likeButton.style.background = checkedColor;
+                    dislikeButton.style.background = uncheckedColor;
+                    break;
+                case 'disliked':
+                    likeButton.style.background = uncheckedColor;
+                    dislikeButton.style.background = checkedColor;
+                    break;
+                default:
+                    likeButton.style.background = uncheckedColor;
+                    dislikeButton.style.background = uncheckedColor;
+            }
+            if (sendUpdate) {
+                window.sendArticleUpdate(state);
+            }
+        };
+        window.login = () => {
+            SAMPLE.login()
+                .then((account) => {
+                    alert('Login result: account=' + JSON.stringify(account, null, '  '));
+                })
+                .catch((error) => {
+                    alert('Login error: ' + error);
+                });
+        };
+    </script>
+    <script src="local://mobile_js_api_sync_inject"></script>
+    <script>
+        window.SAMPLE_LAUNCH_OPTIONS.then((data) => {
+            window.onload = () => {
+                document.getElementById("launch_options_input").value = JSON.stringify(data, null, '  ');
+            };
+
+            SAMPLE.on('articleUpdate', (data) => {
+                window.updateCurrentFeedbackState(data.feedback, false);
+            });
+
+            // send first article update
+            window.sendArticleUpdate();
+        });
+    </script>
+</head>
+<body>
+    <h3>Sync inject test page</h3>
+
+    <h5>Launch options:</h5>
+    <textarea id="launch_options_input" cols="150" wrap="off" readonly></textarea>
+
+    <div class="btn_group">
+        <input class="btn" type="button" value="Login" onclick="window.login()"/>
+
+        <!-- articleUpdate feedback -->
+        <div class="horizontal_btn_group">
+            <input id="like_button" class="btn" type="button" value="Like" onclick="window.onLikeClicked()"/>
+            <input id="dislike_button" class="btn" type="button" style="margin-left: 10px" value="Dislike" onclick="window.onDislikeClicked()"/>
+        </div>
+    </div>
+</body>
+</html>
