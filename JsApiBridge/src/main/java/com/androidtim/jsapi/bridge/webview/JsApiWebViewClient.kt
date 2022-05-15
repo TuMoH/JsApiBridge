@@ -25,7 +25,7 @@ class JsApiWebViewClient(
     ): WebResourceResponse? {
         if (view != null && request != null && syncInjectSrc != null) {
             if (request.url?.toString() == syncInjectSrc) {
-                return jsApi.injectSync(launchOptions)
+                return jsApi.injectSync(launchOptions, onInjectComplete)
             }
         }
         return super.shouldInterceptRequest(view, request)
@@ -48,7 +48,7 @@ class JsApiWebViewClient(
             jsApi.disable()
         }
         if (pageFinished && url != null) {
-            jsApi.injectAsync(launchOptions)
+            jsApi.injectAsync(launchOptions, onInjectComplete)
         }
     }
 
